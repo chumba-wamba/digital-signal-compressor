@@ -1,1 +1,1 @@
-#Digital-Signal-Comrpesor
+# Digital-Signal-Compressor
