@@ -18,6 +18,10 @@ maxCodeLength=Compressor.maxCodeLength(freqDict)
 ```
 compressedSignal,codeDict=Compressor.fixedHuffmanCoding(freqDict, maxCodeLength)
 ```
+Alternatively, one can also use the helper method
+```
+compressedSignal,codeDict=Compressor.fixedLengthHelper()
+```
 5) Decompress the compressed signal :)
 ```
 Decompressor1=Decompressor(compressedSignal, codeDict)
@@ -28,4 +32,13 @@ decompressedSignal=Decompressor1.decompressor()
 compressedSignal,codeDictVar=Compressor.variableHuffmanCoding(freqDict)
 Decompressor2=Decompressor(compressedSignal, codeDictVar)
 decompressedSignal=Decompressor2.decompressor()
+```
+Helper method
+```
+compressedSignal,codeDictVar=Compressor.variableLengthHelper()
+```
+7) Huffman tree visualizer (support only for text based terminal representation) 
+```
+huffmanTree=Compressor.huffmanTreeVisualizer()
+print('Tree:', huffmanTree)
 ```
