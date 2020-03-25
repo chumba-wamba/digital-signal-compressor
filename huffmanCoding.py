@@ -1,7 +1,7 @@
 from collections import Counter
 from math import log, ceil
 import heapq
-from pprint import pprint
+import copy
 
 class HeapNode:
     def __init__(self, key, value):
@@ -9,6 +9,7 @@ class HeapNode:
         self.right=None
         self.key=key
         self.value=value
+        self.flag=None
 
     def __gt__(self, other):
         if(other == None):
@@ -38,7 +39,7 @@ def inorder(root):
 
         elif(stack):
             current=stack.pop()
-            solution.append((current.key,current.value))
+            solution.append((current.key,current.value,current.flag))
             current=current.right
 
         else:
@@ -46,10 +47,35 @@ def inorder(root):
 
     return solution
 
+class TreePath:
+    def __init__(self):
+        self.codeDictVar={}
+
+    def paths(self, root):
+        path = []
+        self.pathsRec(root,path,0)
+
+    def pathsRec(self, root, path, pathLen):
+        if root is None:
+            return
+
+        if(len(path)>pathLen):
+            path[pathLen]=root.flag
+        else:
+            path.append(root.flag)
+
+        pathLen=pathLen+1
+
+        if root.left is None and root.right is None:
+
+            self.codeDictVar[root.key]=copy.deepcopy(''.join(str(char) for char in path[1:]))
+        else:
+            self.pathsRec(root.left,path,pathLen)
+            self.pathsRec(root.right,path,pathLen)
+
 class Compressor:
     def __init__(self, orignalSignal):
         self.orignalSignal=orignalSignal
-        self.heap=[]
 
     def freqCounter(self):
         freqDict={}
@@ -84,20 +110,34 @@ class Compressor:
 
     def variableHuffmanCoding(self, freqDict):
         freqDict={key: value for key, value in sorted(freqDict.items(), key=lambda item: item[1])}
+        heap=[]
 
         for key in freqDict:
-            node=HeapNode(key, freqDict[key])
-            heapq.heappush(self.heap, node)
+            node=HeapNode(key, freqDict[key],)
+            heapq.heappush(heap, node)
 
-        while(len(self.heap)>1):
-            node1=heapq.heappop(self.heap)
-            node2=heapq.heappop(self.heap)
+        counter=0
+        while(len(heap)>1):
+            node1=heapq.heappop(heap)
+            node2=heapq.heappop(heap)
+            print(node1.key,node1.value)
+            print(node2.key,node2.value)
+            node1.flag=0
+            node2.flag=1
 
             merged=HeapNode(None, node1.value+node2.value)
+            merged.flag=(counter%2)
+            counter+=1
+
             merged.left=node1
             merged.right=node2
 
-            heapq.heappush(self.heap, merged)
+            heapq.heappush(heap, merged)
+
+            treePath=TreePath()
+            treePath.paths(heap[0])
+
+        return treePath.codeDictVar
 
 class Decompressor:
     def __init__(self, compressedX, codeDict):
@@ -112,7 +152,7 @@ class Decompressor:
         return orginalX
 
 if __name__ == '__main__':
-    X=[1,1,2,2,2,3,4]
+    X=[1,1,2,2,2,3,4,-1]
     Compressor=Compressor(X)
     freqDict=Compressor.freqCounter()
     maxCodeLength=Compressor.maxCodeLength(freqDict)
@@ -120,12 +160,25 @@ if __name__ == '__main__':
     Decompressor=Decompressor(compressedX, codeDict)
     orginalX=Decompressor.decompressor()
 
-    # print('Orignal:',X)
-    # print('compressed:',compressedX)
+    print('Fixed Length Huffman Coding:')
+    print('Orignal:',X)
+    print('Compressed:',compressedX)
     # if(X==orginalX):
     #     print('Lossless Compression')
 
-    Compressor.variableHuffmanCoding(freqDict)
-    heap=Compressor.heap
-    inorder=inorder(heap[0])
-    print(inorder)
+    print('Variable Length Huffman Coding:')
+    codeDictVar=Compressor.variableHuffmanCoding(freqDict)
+    # inorder=inorder(heap[0])
+    # print(heap[0].value)
+    # print(heap[0].left.key, heap[0].left.value)
+    # print(heap[0].right.key, heap[0].right.value)
+    # print(heap[0].right.right.key, heap[0].right.right.value)
+    # print(heap[0].right.left.key, heap[0].left.right.value)
+    # print(heap[0].right.left.left.key, heap[0].right.left.left.value)
+    # print(heap[0].right.left.right.key, heap[0].right.left.left.value)
+    # print(inorder)
+
+    # TreePath=TreePath()
+    # TreePath.paths(heap[0])
+    # print(TreePath.codeDictVar)
+    print(codeDictVar)
