@@ -120,8 +120,6 @@ class Compressor:
         while(len(heap)>1):
             node1=heapq.heappop(heap)
             node2=heapq.heappop(heap)
-            print(node1.key,node1.value)
-            print(node2.key,node2.value)
             node1.flag=0
             node2.flag=1
 
