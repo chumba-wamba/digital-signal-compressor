@@ -49,7 +49,7 @@ def inorder(root):
 
 class TreePath:
     def __init__(self):
-        self.codeDictVar={}
+        self.tempDictVar={}
 
     def paths(self, root):
         path = []
@@ -68,7 +68,7 @@ class TreePath:
 
         if root.left is None and root.right is None:
 
-            self.codeDictVar[root.key]=copy.deepcopy(''.join(str(char) for char in path[1:]))
+            self.tempDictVar[root.key]=copy.deepcopy(''.join(str(char) for char in path[1:]))
         else:
             self.pathsRec(root.left,path,pathLen)
             self.pathsRec(root.right,path,pathLen)
@@ -102,11 +102,11 @@ class Compressor:
             codeDict[bin(counter)[2:].zfill(length)]=key
             counter+=1
 
-        compressedX=[]
-        for value in X:
-            compressedX.append(tempDict[value])
+        compressedSignal=[]
+        for value in orignalSignal:
+            compressedSignal.append(tempDict[value])
 
-        return compressedX, codeDict
+        return compressedSignal, codeDict
 
     def variableHuffmanCoding(self, freqDict):
         freqDict={key: value for key, value in sorted(freqDict.items(), key=lambda item: item[1])}
@@ -132,51 +132,51 @@ class Compressor:
 
             heapq.heappush(heap, merged)
 
-            treePath=TreePath()
-            treePath.paths(heap[0])
+        treePath=TreePath()
+        treePath.paths(heap[0])
 
-        return treePath.codeDictVar
+        tempDict=treePath.tempDictVar
+        compressedSignal=[]
+        for elem in self.orignalSignal:
+            compressedSignal.append(tempDict[elem])
+
+        codeDictVar={}
+        for key in tempDict:
+            codeDictVar[tempDict[key]]=key
+
+        return compressedSignal, codeDictVar
 
 class Decompressor:
-    def __init__(self, compressedX, codeDict):
-        self.compressedX=compressedX
+    def __init__(self, compressedSignal, codeDict):
+        self.compressedSignal=compressedSignal
         self.codeDict=codeDict
 
     def decompressor(self):
         orginalX=[]
-        for value in self.compressedX:
+        for value in self.compressedSignal:
             orginalX.append(self.codeDict[value])
 
         return orginalX
 
 if __name__ == '__main__':
-    X=[1,1,2,2,2,3,4,-1]
-    Compressor=Compressor(X)
+    orignalSignal=[1,2,3,4,2,2,1,3,5,2,7,9,-11,12,0]
+    Compressor=Compressor(orignalSignal)
     freqDict=Compressor.freqCounter()
     maxCodeLength=Compressor.maxCodeLength(freqDict)
-    compressedX,codeDict=Compressor.fixedHuffmanCoding(freqDict, maxCodeLength)
-    Decompressor=Decompressor(compressedX, codeDict)
-    orginalX=Decompressor.decompressor()
+    compressedSignal,codeDict=Compressor.fixedHuffmanCoding(freqDict, maxCodeLength)
+    Decompressor1=Decompressor(compressedSignal, codeDict)
+    decompressedSignal=Decompressor1.decompressor()
 
-    print('Fixed Length Huffman Coding:')
-    print('Orignal:',X)
-    print('Compressed:',compressedX)
-    # if(X==orginalX):
-    #     print('Lossless Compression')
+    print('\nFixed Length Huffman Coding')
+    print('Orignal:',orignalSignal)
+    print('Compressed:',compressedSignal)
+    print('Decompressed:',decompressedSignal)
 
-    print('Variable Length Huffman Coding:')
-    codeDictVar=Compressor.variableHuffmanCoding(freqDict)
-    # inorder=inorder(heap[0])
-    # print(heap[0].value)
-    # print(heap[0].left.key, heap[0].left.value)
-    # print(heap[0].right.key, heap[0].right.value)
-    # print(heap[0].right.right.key, heap[0].right.right.value)
-    # print(heap[0].right.left.key, heap[0].left.right.value)
-    # print(heap[0].right.left.left.key, heap[0].right.left.left.value)
-    # print(heap[0].right.left.right.key, heap[0].right.left.left.value)
-    # print(inorder)
+    compressedSignal,codeDictVar=Compressor.variableHuffmanCoding(freqDict)
+    Decompressor2=Decompressor(compressedSignal, codeDictVar)
+    decompressedSignal=Decompressor2.decompressor()
 
-    # TreePath=TreePath()
-    # TreePath.paths(heap[0])
-    # print(TreePath.codeDictVar)
-    print(codeDictVar)
+    print('\nVariable Length Huffman Coding:')
+    print('Compressed:',compressedSignal)
+    print('Code Dict:',codeDictVar)
+    print('Decompressed:',decompressedSignal)
