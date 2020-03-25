@@ -2,6 +2,7 @@ from collections import Counter
 from math import log, ceil
 import heapq
 import copy
+from graphviz import Digraph
 
 class HeapNode:
     def __init__(self, key, value):
@@ -67,7 +68,6 @@ class TreePath:
         pathLen=pathLen+1
 
         if root.left is None and root.right is None:
-
             self.tempDictVar[root.key]=copy.deepcopy(''.join(str(char) for char in path[1:]))
         else:
             self.pathsRec(root.left,path,pathLen)
@@ -76,6 +76,9 @@ class TreePath:
 class Compressor:
     def __init__(self, orignalSignal):
         self.orignalSignal=orignalSignal
+
+        huffmanTree=Digraph()
+        self.huffmanTree=huffmanTree
 
     def freqCounter(self):
         freqDict={}
@@ -113,7 +116,7 @@ class Compressor:
         heap=[]
 
         for key in freqDict:
-            node=HeapNode(key, freqDict[key],)
+            node=HeapNode(key, freqDict[key])
             heapq.heappush(heap, node)
 
         counter=0
@@ -126,6 +129,13 @@ class Compressor:
             merged=HeapNode(None, node1.value+node2.value)
             merged.flag=(counter%2)
             counter+=1
+
+            self.huffmanTree.node(f'{node1.key}, {node1.value}', f'{node1.key}, {node1.value}') # Graphviz
+            self.huffmanTree.node(f'{node2.key}, {node2.value}', f'{node2.key}, {node2.value}') # Graphviz
+            self.huffmanTree.node(f'None, {node1.value+node2.value}', f'None, {node1.value+node2.value}') # Graphviz
+
+            self.huffmanTree.edge(f'None, {node1.value+node2.value}', f'{node1.key}, {node1.value}') # Graphviz
+            self.huffmanTree.edge(f'None, {node1.value+node2.value}', f'{node2.key}, {node2.value}') # Graphviz
 
             merged.left=node1
             merged.right=node2
@@ -146,6 +156,23 @@ class Compressor:
 
         return compressedSignal, codeDictVar
 
+    def huffmanTreeVisualizer(self):
+        return self.huffmanTree.source
+        # self.huffmanTree.render('test.gv', view=True) # Graphviz
+
+    def fixedLengthHelper(self):
+        freqDict=self.freqCounter()
+        maxCodeLength=self.maxCodeLength(freqDict)
+        compressedSignal,codeDict=self.fixedHuffmanCoding(freqDict, maxCodeLength)
+
+        return compressedSignal, codeDict
+
+    def variableLengthHelper(self):
+        freqDict=self.freqCounter()
+        compressedSignal,codeDictVar=self.variableHuffmanCoding(freqDict)
+
+        return compressedSignal, codeDictVar
+
 class Decompressor:
     def __init__(self, compressedSignal, codeDict):
         self.compressedSignal=compressedSignal
@@ -159,11 +186,9 @@ class Decompressor:
         return orginalX
 
 if __name__ == '__main__':
-    orignalSignal=[1,2,3,4,2,2,1,3,5,2,7,9,-11,12,0]
+    orignalSignal=[1,2,2,2,2,3,3,3,4,1,1,1,1]
     Compressor=Compressor(orignalSignal)
-    freqDict=Compressor.freqCounter()
-    maxCodeLength=Compressor.maxCodeLength(freqDict)
-    compressedSignal,codeDict=Compressor.fixedHuffmanCoding(freqDict, maxCodeLength)
+    compressedSignal,codeDict=Compressor.fixedLengthHelper()
     Decompressor1=Decompressor(compressedSignal, codeDict)
     decompressedSignal=Decompressor1.decompressor()
 
@@ -172,11 +197,10 @@ if __name__ == '__main__':
     print('Compressed:',compressedSignal)
     print('Decompressed:',decompressedSignal)
 
-    compressedSignal,codeDictVar=Compressor.variableHuffmanCoding(freqDict)
-    Decompressor2=Decompressor(compressedSignal, codeDictVar)
-    decompressedSignal=Decompressor2.decompressor()
-
+    compressedSignal,codeDictVar=Compressor.variableLengthHelper()
+    huffmanTree=Compressor.huffmanTreeVisualizer()
     print('\nVariable Length Huffman Coding:')
     print('Compressed:',compressedSignal)
     print('Code Dict:',codeDictVar)
     print('Decompressed:',decompressedSignal)
+    print('Tree:', huffmanTree)
