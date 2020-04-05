@@ -73,6 +73,7 @@ class TreePath: # Issues in this Class
             self.pathsRec(root.left,path,pathLen)
             self.pathsRec(root.right,path,pathLen)
 
+
 class Compressor:
     def __init__(self, orignalSignal):
         self.orignalSignal=orignalSignal
@@ -203,4 +204,4 @@ if __name__ == '__main__':
     print('Compressed:',compressedSignal)
     print('Code Dict:',codeDictVar)
     print('Decompressed:',decompressedSignal)
-    print('Tree:', huffmanTree)
+    # print('Tree:', huffmanTree)
