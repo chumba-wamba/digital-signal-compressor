@@ -4,23 +4,23 @@ A python project for signal compression viz Huffman Coding which serves as a gra
 ### Using the Script:
 1) Create an object of the Compressor Class
 ``` 
-Compressor = Compressor(orignalSignal) 
+CompressorObject = Compressor(orignal_signal) 
 ```
 2) Compress the orignal signal
 ```
-compressedSignal, codeDict = Compressor.fixedLengthHelper()
+compressed_signal, code_dict = CompressorObject.fixed_length_helper()
 ```
 3) Decompress the compressed signal
 ```
-Decompressor1 = Decompressor(compressedSignal, codeDict)
-decompressedSignal = Decompressor1.decompressor()
+DecompressorObject = Decompressor(compressed_signal, code_dict)
+decompressed_signal = DecompressorObject.decompressor()
 ```
 4) Compress (and then decompress) the orignal signal using variable length Huffman Coding
 ```
-compressedSignal, codeDictVar = Compressor.variableLengthHelper()
+compressed_signal, code_dict_var = CompressorObject.variable_length_helper()
 ```
 5) Huffman tree visualizer (support limited to in-terminal text) 
 ```
-huffmanTree = Compressor.huffmanTreeVisualizer()
-print('Tree:', huffmanTree)
+huffman_tree = CompressorObject.huffman_tree_visualizer()
+print('Tree:', huffman_tree)
 ```
