@@ -19,7 +19,7 @@ class Compressor:
         for value in self.orignal_signal:
             if value not in freq_dict:
                 freq_dict[value] = 0
-            freq_dict[value] += 1
+            freq_dict[value] + = 1
 
         return freq_dict
 
@@ -37,7 +37,7 @@ class Compressor:
         for key in freq_dict:
             temp_dict[key] = bin(counter)[2:].zfill(length)
             code_dict[bin(counter)[2:].zfill(length)] = key
-            counter += 1
+            counter + = 1
 
         compressed_signal = []
         for value in orignal_signal:
@@ -61,21 +61,21 @@ class Compressor:
             node1.flag = 0
             node2.flag = 1
 
-            merged = HeapNode(None, node1.value+node2.value)
+            merged = HeapNode(None, node1.value + node2.value)
             merged.flag = (counter % 2)
-            counter += 1
+            counter + = 1
 
             self.huffman_tree.node(
                 f'{node1.key}, {node1.value}', f'{node1.key}, {node1.value}')  # Graphviz
             self.huffman_tree.node(
                 f'{node2.key}, {node2.value}', f'{node2.key}, {node2.value}')  # Graphviz
             self.huffman_tree.node(
-                f'None, {node1.value+node2.value}', f'None, {node1.value+node2.value}')  # Graphviz
+                f'None, {node1.value + node2.value}', f'None, {node1.value + node2.value}')  # Graphviz
 
             self.huffman_tree.edge(
-                f'None, {node1.value+node2.value}', f'{node1.key}, {node1.value}')  # Graphviz
+                f'None, {node1.value + node2.value}', f'{node1.key}, {node1.value}')  # Graphviz
             self.huffman_tree.edge(
-                f'None, {node1.value+node2.value}', f'{node2.key}, {node2.value}')  # Graphviz
+                f'None, {node1.value + node2.value}', f'{node2.key}, {node2.value}')  # Graphviz
 
             merged.left, merged.right = node1, node2
             heapq.heappush(heap, merged)
@@ -108,6 +108,7 @@ class Compressor:
 
     def variable_length_helper(self):
         freq_dict = self.freq_counter()
-        compressed_signal, code_dictVar = self.variable_huffman_coding(freq_dict)
+        compressed_signal, code_dictVar = self.variable_huffman_coding(
+            freq_dict)
 
         return compressed_signal, code_dictVar
